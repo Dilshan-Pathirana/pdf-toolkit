@@ -1,27 +1,35 @@
-from langchain.llms import GPT4All
-from langchain.chains.question_answering import load_qa_chain
-from langchain.docstore.document import Document
+from pathlib import Path
+from gpt4all import GPT4All
 from services.pdf_utils import extract_texts_from_multiple_pdfs
 
-# Path to your downloaded GPT4All model
-MODEL_PATH = "models/gpt4all-lora-quantized.bin"
+# Custom folder for AI models
+CUSTOM_MODEL_PATH = Path(r"D:\AI models\PDF toolset")
+CUSTOM_MODEL_PATH.mkdir(parents=True, exist_ok=True)  # ensure folder exists
+
+# GPT4All model filename
+MODEL_NAME = "Meta-Llama-3-8B-Instruct.Q4_0.gguf"
 
 def ask_ai_about_pdfs(pdf_paths, question):
     """
-    Extract text from PDFs and ask a local GPT4All model.
+    Extract text from multiple PDFs and answer a question using GPT4All offline.
     """
-    # Step 1: Extract text from PDFs
+
+    # 1️⃣ Extract text from all PDFs
     pdf_texts = extract_texts_from_multiple_pdfs(pdf_paths)
+    combined_text = "\n\n".join(pdf_texts)
 
-    # Step 2: Prepare LangChain Documents
-    documents = [Document(page_content=text) for text in pdf_texts]
+    # 2️⃣ Load GPT4All (downloads first time if needed, saves to custom path)
+    model = GPT4All(
+        model_name=MODEL_NAME,
+        model_path=CUSTOM_MODEL_PATH,
+        verbose=True
+    )
 
-    # Step 3: Initialize GPT4All LLM
-    llm = GPT4All(model=MODEL_PATH, verbose=False)
-
-    # Step 4: Load a question-answering chain
-    chain = load_qa_chain(llm, chain_type="stuff")
-
-    # Step 5: Run the chain
-    answer = chain.run(input_documents=documents, question=question)
-    return answer
+    # 3️⃣ Start chat session and generate answer
+    with model.chat_session() as session:
+        prompt = (
+            "You are an expert assistant. Answer the following question based on the documents.\n\n"
+            f"Documents:\n{combined_text}\n\nQuestion: {question}\nAnswer:"
+        )
+        response = session.generate(prompt, max_tokens=1024)
+        return response
