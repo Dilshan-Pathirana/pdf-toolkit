@@ -7,11 +7,7 @@ from services.images_to_pdf import images_to_pdf
 from services.password_pdf import add_password, remove_password
 from services.ocr_pdf import ocr_pdf
 from services.pdf_to_word import pdf_to_word
-from services.ai_qa import ask_ai_about_pdfs   # Gemma-3 offline AI
-
-def get_file_list(prompt):
-    """Helper to get a list of file paths from user input."""
-    return [f.strip() for f in input(prompt).split(",")]
+from services.ai_qa import ask_ai_about_pdfs  # Gemma-3 GGUF offline AI
 
 def main():
     print("PDF Toolkit Prototype (with Gemma-3 Offline AI)")
@@ -27,73 +23,69 @@ def main():
     print("10) PDF → Word")
     print("11) AI PDF Question Answering (Gemma-3 Offline)")
 
-    choice = input("Choose: ").strip()
+    choice = input("Choose: ")
 
     if choice == "1":
-        files = get_file_list("Enter PDF paths separated by commas:\n")
-        output = input("Output file path: ").strip()
-        print("Merged to:", merge_pdfs(files, output))
+        files = input("Enter PDF paths separated by commas:\n").split(",")
+        output = input("Output file path: ")
+        print("Merged to:", merge_pdfs([f.strip() for f in files], output))
 
     elif choice == "2":
-        file = input("PDF file to split: ").strip()
-        folder = input("Output folder: ").strip()
+        file = input("PDF file to split: ")
+        folder = input("Output folder: ")
         split_pdf(file, folder)
         print("Splitting done!")
 
     elif choice == "3":
-        file = input("PDF file to compress: ").strip()
-        output = input("Output file path: ").strip()
+        file = input("PDF file to compress: ")
+        output = input("Output file path: ")
         compress_pdf(file, output)
         print("Compressed to:", output)
 
     elif choice == "4":
-        file = input("PDF file: ").strip()
+        file = input("PDF file: ")
         pages = [int(p.strip()) for p in input("Pages to extract (comma-separated, 0-indexed): ").split(",")]
-        output = input("Output file path: ").strip()
+        output = input("Output file path: ")
         extract_pages(file, output, pages)
 
     elif choice == "5":
-        file = input("PDF file: ").strip()
-        folder = input("Output folder: ").strip()
+        file = input("PDF file: ")
+        folder = input("Output folder: ")
         pdf_to_images(file, folder)
 
     elif choice == "6":
-        files = get_file_list("Enter image paths separated by commas:\n")
-        output = input("Output PDF path: ").strip()
-        images_to_pdf(files, output)
+        files = input("Enter image paths separated by commas:\n").split(",")
+        output = input("Output PDF path: ")
+        images_to_pdf([f.strip() for f in files], output)
 
     elif choice == "7":
-        file = input("PDF file: ").strip()
-        pwd = input("Enter password: ").strip()
-        output = input("Output PDF path: ").strip()
+        file = input("PDF file: ")
+        pwd = input("Enter password: ")
+        output = input("Output file path: ")
         add_password(file, output, pwd)
 
     elif choice == "8":
-        file = input("PDF file: ").strip()
-        pwd = input("Current password: ").strip()
-        output = input("Output PDF path: ").strip()
+        file = input("PDF file: ")
+        pwd = input("Current password: ")
+        output = input("Output file path: ")
         remove_password(file, output, pwd)
 
     elif choice == "9":
-        file = input("Scanned PDF file: ").strip()
-        output = input("Output searchable PDF path: ").strip()
+        file = input("Scanned PDF file: ")
+        output = input("Output searchable PDF path: ")
         ocr_pdf(file, output)
 
     elif choice == "10":
-        file = input("PDF file: ").strip()
-        output = input("Output Word path: ").strip()
+        file = input("PDF file: ")
+        output = input("Output Word path: ")
         pdf_to_word(file, output)
 
     elif choice == "11":
-        files = get_file_list("Enter PDF paths separated by commas:\n")
-        question = input("Enter your question: ").strip()
+        files = input("Enter PDF paths separated by commas:\n").split(",")
+        question = input("Enter your question: ")
         print("\nProcessing PDFs and running Gemma-3 offline AI...\n")
-        try:
-            answer = ask_ai_about_pdfs(files, question)
-        except Exception as e:
-            print("Error running AI:", e)
-        else:
-            print("\nAI Answer:\n", answer)
+        answer = ask_ai_about_pdfs([f.strip() for f in files], question)
+        print("\nAI Answer:\n", answer)
 
     else:
         print("Invalid choice!")
