@@ -7,7 +7,6 @@ from services.images_to_pdf import images_to_pdf
 from services.password_pdf import add_password, remove_password
 from services.ocr_pdf import ocr_pdf
 from services.pdf_to_word import pdf_to_word
-from services.ai_qa import ask_ai_about_pdfs  # Gemma-3 GGUF offline AI
 
 def main():
     print("PDF Toolkit Prototype (with Gemma-3 Offline AI)")
@@ -21,7 +20,6 @@ def main():
     print("8) Remove Password from PDF")
     print("9) OCR (Scan to Searchable PDF)")
     print("10) PDF → Word")
-    print("11) AI PDF Question Answering (Gemma-3 Offline)")
 
     choice = input("Choose: ")
 
@@ -80,12 +78,7 @@ def main():
         output = input("Output Word path: ")
         pdf_to_word(file, output)
 
-    elif choice == "11":
-        files = input("Enter PDF paths separated by commas:\n").split(",")
-        question = input("Enter your question: ")
-        print("\nProcessing PDFs and running Gemma-3 offline AI...\n")
-        answer = ask_ai_about_pdfs([f.strip() for f in files], question)
-        print("\nAI Answer:\n", answer)
+
 
     else:
         print("Invalid choice!")

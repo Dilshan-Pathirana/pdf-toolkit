@@ -1,2 +1,11 @@
-PyPDF2
+torch
+transformers
+accelerate
+kagglehub
+pypdf2
 pikepdf
+pdfplumber
+pdf2image
+pillow
+pytesseract
+pdf2docx
